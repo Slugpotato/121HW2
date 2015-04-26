@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +31,12 @@ import java.util.HashMap;
 import java.util.List;
 
 
+
+
 public class MainActivity extends ActionBarActivity {
+
+    // Progress bar showing call to server in progress
+    private ProgressBar spinner;
 
     Location lastLocation;
     private double lastAccuracy = (double) 1e10;
@@ -144,6 +150,12 @@ public class MainActivity extends ActionBarActivity {
         ListView myListView = (ListView) findViewById(R.id.listView);
         myListView.setAdapter(aa);
         aa.notifyDataSetChanged();
+
+        // Progress bar is initially set to not visible
+        spinner = (ProgressBar)findViewById(R.id.progressBar);
+        spinner.setVisibility(View.VISIBLE);
+
+
     }
 
     @Override
