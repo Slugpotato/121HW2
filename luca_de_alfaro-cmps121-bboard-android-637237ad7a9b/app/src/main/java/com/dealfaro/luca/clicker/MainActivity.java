@@ -3,6 +3,8 @@ package com.dealfaro.luca.clicker;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
@@ -41,6 +43,8 @@ public class MainActivity extends ActionBarActivity {
     Location lastLocation;
     private double lastAccuracy = (double) 1e10;
     private long lastAccuracyTime = 0;
+
+    private static final String TAG = "MyActivity";
 
     private static final String LOG_TAG = "lclicker";
 
@@ -167,6 +171,11 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        // Then start to request location updates, directing them to locationListener.
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         // First super, then do stuff.
         // Let us display the previous posts, if any.
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -187,6 +196,25 @@ public class MainActivity extends ActionBarActivity {
         }
         super.onPause();
     }
+
+    LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            // Do something with the location you receive.
+
+            Log.v(TAG, "location is:" + location);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+        @Override
+        public void onProviderEnabled(String provider) {}
+
+        @Override
+        public void onProviderDisabled(String provider) {}
+    };
+
 
 
     public void clickButton(View v) {
