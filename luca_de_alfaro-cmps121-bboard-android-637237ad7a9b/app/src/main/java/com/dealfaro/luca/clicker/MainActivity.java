@@ -157,8 +157,8 @@ public class MainActivity extends ActionBarActivity {
 
         // Progress bar is initially set to not visible
         spinner = (ProgressBar)findViewById(R.id.progressBar);
-        spinner.setVisibility(View.VISIBLE);
-
+        spinner.setVisibility(View.GONE);
+        //spinner.setVisibility(View.VISIBLE);
 
     }
 
@@ -189,6 +189,12 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onPause() {
+        // Stops the location updates.
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationManager.removeUpdates(locationListener);
+        // Disables the submit button.
+        Button submitButton = (Button) findViewById(R.id.button);
+        submitButton.setEnabled(false);
         // Stops the upload if any.
         if (uploader != null) {
             uploader.cancel(true);
@@ -204,15 +210,15 @@ public class MainActivity extends ActionBarActivity {
 
             TextView labelView = (TextView) findViewById(R.id.currLocation);
             if (location == null) {
-                String acc = String.format("Location:");
+                String acc = String.format("Unable to connect");
                 labelView.setText(acc);
 
-                Log.v(TAG, "Hitting null");
+                //Log.v(TAG, "Hitting null");
             } else {
 
-                String acc = String.format("Latitude: %.2f Longitude: %.2f", + location.getLatitude(), + location.getLongitude());
+                String acc = String.format("Latitude: %.6f \n Longitude: %.6f", + location.getLatitude(), + location.getLongitude());
                 labelView.setText(acc);
-                Log.v(TAG, "Working " +location.getLatitude() +location.getLongitude());
+                //Log.v(TAG, "Working " +location.getLatitude() +location.getLongitude());
             }
 
 
@@ -241,7 +247,7 @@ public class MainActivity extends ActionBarActivity {
         PostMessageSpec myCallSpec = new PostMessageSpec();
 
 
-        myCallSpec.url = SERVER_URL_PREFIX + "post_msg.json";
+        myCallSpec.url = SERVER_URL_PREFIX + "put_local";
         myCallSpec.context = MainActivity.this;
         // Let's add the parameters.
         HashMap<String,String> m = new HashMap<String,String>();
