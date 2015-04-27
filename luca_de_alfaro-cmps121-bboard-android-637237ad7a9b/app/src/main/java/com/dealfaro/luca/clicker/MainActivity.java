@@ -202,7 +202,21 @@ public class MainActivity extends ActionBarActivity {
         public void onLocationChanged(Location location) {
             // Do something with the location you receive.
 
-            Log.v(TAG, "location is:" + location);
+            TextView labelView = (TextView) findViewById(R.id.currLocation);
+            if (location == null) {
+                String acc = String.format("Location:");
+                labelView.setText(acc);
+
+                Log.v(TAG, "Hitting null");
+            } else {
+
+                String acc = String.format("Latitude: %.2f Longitude: %.2f", + location.getLatitude(), + location.getLongitude());
+                labelView.setText(acc);
+                Log.v(TAG, "Working " +location.getLatitude() +location.getLongitude());
+            }
+
+
+            //Log.v(TAG, "location is:" + location);
         }
 
         @Override
