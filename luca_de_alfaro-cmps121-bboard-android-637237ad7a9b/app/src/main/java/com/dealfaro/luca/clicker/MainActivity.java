@@ -164,6 +164,31 @@ public class MainActivity extends ActionBarActivity {
         spinner = (ProgressBar)findViewById(R.id.progressBar);
         spinner.setVisibility(View.GONE);
 
+        Log.v(TAG, "Initialized properly");
+
+        PostMessageSpec myCallSpec = new PostMessageSpec();
+
+
+        String lat= "" + latitude ;
+        String lng= "" + longitude ;
+        myCallSpec.url = SERVER_URL_PREFIX + "get_local";
+        myCallSpec.context = MainActivity.this;
+
+        // Let's add the parameters.
+        HashMap<String,String> m = new HashMap<String,String>();
+        // m.put("app_id", MY_APP_ID);
+        // m.put("msg", msg);
+        m.put("lat", lat);
+        m.put("lng", lng);
+        myCallSpec.setParams(m);
+        // Actual server call.
+        if (uploader != null) {
+            // There was already an upload in progress.
+            uploader.cancel(true);
+        }
+        uploader = new ServerCall();
+        uploader.execute(myCallSpec);
+
     }
 
     @Override
@@ -284,7 +309,7 @@ public class MainActivity extends ActionBarActivity {
         uploader = new ServerCall();
         uploader.execute(myCallSpec);
 
-        spinner.setVisibility(View.GONE);
+
     }
 
 
@@ -320,7 +345,7 @@ public class MainActivity extends ActionBarActivity {
             uploader = new ServerCall();
             uploader.execute(myCallSpec);
 
-            spinner.setVisibility(View.GONE);
+
 
         }
     };
@@ -368,14 +393,14 @@ public class MainActivity extends ActionBarActivity {
 
     private void displayResult(String result) {
         Log.v(TAG, "Result is: " + result);
-
+        spinner.setVisibility(View.GONE);
         Gson gson = new Gson();
         MessageList ml = gson.fromJson(result, MessageList.class);
         // Fills aList, so we can fill the listView.
         aList.clear();
         for (int i = 0; i < ml.messages.length; i++) {
             ListElement ael = new ListElement();
-            ael.textLabel = ml.messages[i].msg;
+            ael.textLabel = ml.messages[i].msg+"\n"+ml.messages[i].ts;
             ael.buttonLabel = "Click";
             aList.add(ael);
         }
