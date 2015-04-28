@@ -44,6 +44,9 @@ public class MainActivity extends ActionBarActivity {
     private double lastAccuracy = (double) 1e10;
     private long lastAccuracyTime = 0;
 
+    private double longitude;
+    private double latitude;
+
     private static final String TAG = "MyActivity";
 
     private static final String LOG_TAG = "lclicker";
@@ -158,7 +161,6 @@ public class MainActivity extends ActionBarActivity {
         // Progress bar is initially set to not visible
         spinner = (ProgressBar)findViewById(R.id.progressBar);
         spinner.setVisibility(View.GONE);
-        //spinner.setVisibility(View.VISIBLE);
 
     }
 
@@ -178,14 +180,14 @@ public class MainActivity extends ActionBarActivity {
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         // First super, then do stuff.
         // Let us display the previous posts, if any.
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        String result = settings.getString(PREF_POSTS, null);
-        if (result != null) {
-            displayResult(result);
-        }
+
+
+//        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+//        String result = settings.getString(PREF_POSTS, null);
+//        if (result != null) {
+//            displayResult(result);
+//        }
     }
-
-
 
     @Override
     protected void onPause() {
@@ -193,8 +195,8 @@ public class MainActivity extends ActionBarActivity {
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationManager.removeUpdates(locationListener);
         // Disables the submit button.
-        Button submitButton = (Button) findViewById(R.id.button);
-        submitButton.setEnabled(false);
+//        Button submitButton = (Button) findViewById(R.id.button);
+//        submitButton.setEnabled(false);
         // Stops the upload if any.
         if (uploader != null) {
             uploader.cancel(true);
@@ -216,8 +218,10 @@ public class MainActivity extends ActionBarActivity {
                 //Log.v(TAG, "Hitting null");
             } else {
 
-                String acc = String.format("Latitude: %.6f \n Longitude: %.6f", + location.getLatitude(), + location.getLongitude());
+                String acc = String.format("Latitude: %.6f \n Longitude: %.6f", +location.getLatitude(), +location.getLongitude());
                 labelView.setText(acc);
+                latitude=location.getLatitude();
+                longitude=location.getLongitude();
                 //Log.v(TAG, "Working " +location.getLatitude() +location.getLongitude());
             }
 
@@ -239,6 +243,11 @@ public class MainActivity extends ActionBarActivity {
 
     public void clickButton(View v) {
 
+
+        // Make progressBar visible
+        spinner = (ProgressBar)findViewById(R.id.progressBar);
+        spinner.setVisibility(View.VISIBLE);
+
         // Get the text we want to send.
         EditText et = (EditText) findViewById(R.id.editText);
         String msg = et.getText().toString();
@@ -247,12 +256,18 @@ public class MainActivity extends ActionBarActivity {
         PostMessageSpec myCallSpec = new PostMessageSpec();
 
 
+        String lat= "" + latitude ;
+        String lng= "" + longitude ;
         myCallSpec.url = SERVER_URL_PREFIX + "put_local";
         myCallSpec.context = MainActivity.this;
+
+
         // Let's add the parameters.
         HashMap<String,String> m = new HashMap<String,String>();
         m.put("app_id", MY_APP_ID);
         m.put("msg", msg);
+        m.put("lat", lat);
+        m.put("lng", lng);
         myCallSpec.setParams(m);
         // Actual server call.
         if (uploader != null) {
@@ -261,7 +276,10 @@ public class MainActivity extends ActionBarActivity {
         }
         uploader = new ServerCall();
         uploader.execute(myCallSpec);
+
+        spinner.setVisibility(View.GONE);
     }
+
 
 
     private String reallyComputeHash(String s) {
@@ -305,13 +323,15 @@ public class MainActivity extends ActionBarActivity {
 
 
     private void displayResult(String result) {
+        Log.v(TAG, "Result is: " + result);
+
         Gson gson = new Gson();
         MessageList ml = gson.fromJson(result, MessageList.class);
         // Fills aList, so we can fill the listView.
         aList.clear();
         for (int i = 0; i < ml.messages.length; i++) {
             ListElement ael = new ListElement();
-            ael.textLabel = ml.messages[i];
+            ael.textLabel = ml.messages[i].msg;
             ael.buttonLabel = "Click";
             aList.add(ael);
         }

@@ -5,7 +5,8 @@ package com.dealfaro.luca.clicker;
  */
 public class MessageList {
     public MessageList() {};
+    public MsgInfo[] messages;
 
-    String[] messages;
 
 }
+
