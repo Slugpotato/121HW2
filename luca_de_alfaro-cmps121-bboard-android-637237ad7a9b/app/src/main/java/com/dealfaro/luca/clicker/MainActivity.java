@@ -83,6 +83,8 @@ public class MainActivity extends ActionBarActivity {
 
     private class MyAdapter extends ArrayAdapter<ListElement> {
 
+
+
         int resource;
         Context context;
 
@@ -178,6 +180,12 @@ public class MainActivity extends ActionBarActivity {
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+        Button button;
+
+        button = (Button) findViewById(R.id.button2);
+        button.setOnClickListener(refresh);
+
         // First super, then do stuff.
         // Let us display the previous posts, if any.
 
@@ -194,10 +202,7 @@ public class MainActivity extends ActionBarActivity {
         // Stops the location updates.
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationManager.removeUpdates(locationListener);
-        // Disables the submit button.
-//        Button submitButton = (Button) findViewById(R.id.button);
-//        submitButton.setEnabled(false);
-        // Stops the upload if any.
+
         if (uploader != null) {
             uploader.cancel(true);
             uploader = null;
@@ -218,7 +223,7 @@ public class MainActivity extends ActionBarActivity {
                 //Log.v(TAG, "Hitting null");
             } else {
 
-                String acc = String.format("Latitude: %.6f \n Longitude: %.6f", +location.getLatitude(), +location.getLongitude());
+                String acc = String.format("Latitude: %.6f\nLongitude: %.6f", +location.getLatitude(), +location.getLongitude());
                 labelView.setText(acc);
                 latitude=location.getLatitude();
                 longitude=location.getLongitude();
@@ -244,9 +249,11 @@ public class MainActivity extends ActionBarActivity {
     public void clickButton(View v) {
 
 
+
         // Make progressBar visible
         spinner = (ProgressBar)findViewById(R.id.progressBar);
         spinner.setVisibility(View.VISIBLE);
+
 
         // Get the text we want to send.
         EditText et = (EditText) findViewById(R.id.editText);
@@ -280,6 +287,43 @@ public class MainActivity extends ActionBarActivity {
         spinner.setVisibility(View.GONE);
     }
 
+
+
+
+
+
+    View.OnClickListener refresh = new View.OnClickListener() {
+        public void onClick(View v) {
+
+            Log.v(TAG, "Getting here after refresh button click");
+
+            PostMessageSpec myCallSpec = new PostMessageSpec();
+
+
+            String lat= "" + latitude ;
+            String lng= "" + longitude ;
+            myCallSpec.url = SERVER_URL_PREFIX + "get_local";
+            myCallSpec.context = MainActivity.this;
+
+            // Let's add the parameters.
+            HashMap<String,String> m = new HashMap<String,String>();
+            // m.put("app_id", MY_APP_ID);
+            // m.put("msg", msg);
+            m.put("lat", lat);
+            m.put("lng", lng);
+            myCallSpec.setParams(m);
+            // Actual server call.
+            if (uploader != null) {
+                // There was already an upload in progress.
+                uploader.cancel(true);
+            }
+            uploader = new ServerCall();
+            uploader.execute(myCallSpec);
+
+            spinner.setVisibility(View.GONE);
+
+        }
+    };
 
 
     private String reallyComputeHash(String s) {
