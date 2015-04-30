@@ -273,8 +273,6 @@ public class MainActivity extends ActionBarActivity {
 
     public void clickButton(View v) {
 
-
-
         // Make progressBar visible
         spinner = (ProgressBar)findViewById(R.id.progressBar);
         spinner.setVisibility(View.VISIBLE);
@@ -283,6 +281,9 @@ public class MainActivity extends ActionBarActivity {
         // Get the text we want to send.
         EditText et = (EditText) findViewById(R.id.editText);
         String msg = et.getText().toString();
+
+        // Reset the editText as null after posting
+        et.setText(null);
 
         // Then, we start the call.
         PostMessageSpec myCallSpec = new PostMessageSpec();
@@ -319,6 +320,10 @@ public class MainActivity extends ActionBarActivity {
 
     View.OnClickListener refresh = new View.OnClickListener() {
         public void onClick(View v) {
+
+            // Make progressBar visible
+            spinner = (ProgressBar)findViewById(R.id.progressBar);
+            spinner.setVisibility(View.VISIBLE);
 
             Log.v(TAG, "Getting here after refresh button click");
 

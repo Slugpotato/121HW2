@@ -5,7 +5,7 @@
     android:padding="8dp">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="New Text"
         android:id="@+id/itemText"
@@ -15,7 +15,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New Button"
-        android:id="@+id/itemButton"
-        android:layout_weight="0" />
+        android:id="@+id/itemButton" />
 
 </LinearLayout>
